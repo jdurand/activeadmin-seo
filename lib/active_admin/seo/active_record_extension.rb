@@ -1,6 +1,32 @@
 module ActiveAdmin::Seo::ActiveRecordExtension
   include ActiveAdmin::Seo
 
+  module InstanceMethods
+    def seo_meta_defaults
+      {}
+    end
+
+    def seo_meta_defaults_with_attributes( attributes = {} )
+      seo_meta_defaults.merge(
+        attributes
+          .symbolize_keys
+          .slice( *seo_meta_defaults.keys )
+          .select{ |k,v| v.present? }
+      )
+    end
+
+    def seo_meta_resource
+      seo_meta_defaults_with_attributes( seo_meta.try(:attributes) )
+    end
+
+    def build_seo_meta( attributes = {}, options = {} )
+      super(
+        seo_meta_defaults_with_attributes( attributes ),
+        options
+      )
+    end
+  end
+
   def has_seo_meta(*args, &block)
     options = args.extract_options!
 
@@ -41,6 +67,8 @@ private
     else
       klass.attr_accessible :seo_meta_attributes
     end
+
+    klass.send :include, InstanceMethods
   end
 
   def translatable_model
