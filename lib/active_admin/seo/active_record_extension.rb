@@ -6,17 +6,18 @@ module ActiveAdmin::Seo::ActiveRecordExtension
       {}
     end
 
-    def seo_meta_defaults_with_attributes( attributes = {} )
+    def seo_meta_defaults_with_attributes( attributes = nil )
       seo_meta_defaults.merge(
-        attributes
+        ( attributes || seo_meta.try( :attributes ) || {} )
           .symbolize_keys
           .slice( *seo_meta_defaults.keys )
           .select{ |k,v| v.present? }
       )
     end
 
-    def seo_meta_resource
-      seo_meta_defaults_with_attributes( seo_meta.try(:attributes) )
+    def seo_meta_with_defaults
+      seo_meta.attributes = seo_meta_defaults_with_attributes
+      seo_meta
     end
 
     def build_seo_meta( attributes = {}, options = {} )
