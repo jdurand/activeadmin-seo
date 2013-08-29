@@ -16,6 +16,8 @@ module ActiveAdmin::Seo::ActiveRecordExtension
     end
 
     def seo_meta_with_defaults
+      return nil if seo_meta.blank?
+
       seo_meta.attributes = seo_meta_defaults_with_attributes
       seo_meta
     end
